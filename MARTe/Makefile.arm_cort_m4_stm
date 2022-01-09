@@ -25,14 +25,13 @@
 #############################################################
 
 MAKEDEFAULTDIR=$(MARTe2_Embedded_Tools_DIR_BASE)/MakeDefaults
-PROJECT_DIR=$(shell pwd)
 CFG_FILE=$(PROJECT_DIR)/Configuration/RobotArm.cfg
 SCHEDULER_NAME = BasicScheduler
 
 
 OBJSX=	startup_main.x
 
-SPB = ToolConfiguration.x GAMs/RobotArmGAM.x \
+SPB = ToolConfiguration.x \
 	$(MARTe2_Embedded_Tools_DIR)/DataSources/GPIO.x \
 	$(MARTe2_Embedded_Tools_DIR)/DataSources/Encoder_opt.x \
 	$(MARTe2_Embedded_Tools_DIR)/DataSources/ADC_DMA.x \
@@ -74,7 +73,6 @@ INCLUDES += -I$(STM_CUBE_FW_DIR)/Drivers/$(DRIVER_PLATFORM)_HAL_Driver/Src/
 
 # Static project libraries
 LIBRARIES_STATIC = Build/ToolConfiguration.a
-#LIBRARIES_STATIC += Build/RobotArmGAM.a
 
 
 # Static platform libraries
@@ -103,12 +101,9 @@ all: update $(SUBPROJ) $(OBJS) \
 
 
 update:
-	ls $(PROJECT_DIR)/ToolConfiguration/Makefile* || cp $(SCRIPT_DIR)/Makefile.* $(PROJECT_DIR)/ToolConfiguration
-	ls $(PROJECT_DIR)/ToolConfiguration/usbd_cdc_if_template_* || cp $(SCRIPT_DIR)/usbd_cdc_if_template_* $(PROJECT_DIR)/ToolConfiguration
-	ls $(PROJECT_DIR)/ToolConfiguration/STM32ExtractFiles.py || cp $(SCRIPT_DIR)/STM32ExtractFiles.py $(PROJECT_DIR)/ToolConfiguration
-	ls stm32f4xx.h || cd $(PROJECT_DIR)/ToolConfiguration; python3 STM32ExtractFiles.py $(PROJECT_NAME) $(PROJECT_NAME) . ; cd -
-	ls $(PROJECT_DIR)/ToolConfiguration/HandleDatabase.* || cp $(SCRIPT_DIR)/HandleDatabase.* $(PROJECT_DIR)/ToolConfiguration
-	ls $(PROJECT_DIR)/ToolConfiguration/update.sh || cp $(SCRIPT_DIR)/update.sh $(PROJECT_DIR)/ToolConfiguration
+	mkdir -p $(BUILD_DIR) && cp $(SCRIPT_DIR)/loader.sh $(BUILD_DIR)
+	./prepare.sh
+
 
 
 include $(MAKEDEFAULTDIR)/MakeStdLibRules.$(TARGET)
